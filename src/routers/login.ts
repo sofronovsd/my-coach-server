@@ -1,4 +1,6 @@
 import express from 'express';
+import jwt  from 'jsonwebtoken';
+import { jwtSecret } from '../app';
 
 const router = express.Router();
 
@@ -9,8 +11,7 @@ router.get(``,
 
 router.post<{},
 	{
-		message: string;
-		result: boolean;
+		token: string;
 	},
 	{
 		login: string;
@@ -25,10 +26,8 @@ router.post<{},
 		} = req;
 		
 		if (login === 'admin' && password === 'admin') {
-			res.send({
-				message: 'OK',
-				result: true,
-			});
+			const token = jwt.sign({ login, password }, jwtSecret);
+			res.json({ token });
 		} else {
 			res.status(500);
 			res.send();
