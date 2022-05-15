@@ -4,6 +4,8 @@ import jwt, {
 	JwtPayload,
 	VerifyErrors,
 } from 'jsonwebtoken';
+import mongoose from 'mongoose';
+
 import { default as loginRouter } from './routers/login';
 import { default as dashboardRouter } from './routers/dashboard';
 
@@ -42,6 +44,15 @@ const authorization = (req: any, res: any, next: any) => {
 
 app.use(`${BASE_URL}/dashboard`, authorization, dashboardRouter);
 
-app.listen(port, () => {
-	console.log(`Server listening on port ${port}`);
-});
+mongoose
+	.connect('mongodb://127.0.0.1:27017/my-coach')
+	.then(() => {
+		console.log(`mongodb is connected`);
+		app.listen(port, () => {
+			console.log(`Server listening on port ${port}`);
+		});
+	})
+	.catch(err => {
+		console.log('Failed to connect to mongodb:', err);
+	});
+
